@@ -10,6 +10,37 @@ const TOKEN = process.env.TOKEN
 //Get reddit api for memes
 // Get the automation software to work for the rooms
 // todo lists app
+class Stack {
+    constructor() {
+        this.list = [];
+        this.top = 0;
+    }
+        push(element) {
+            this.list[this.top] = element;
+            this.top=this.top+1;
+        }
+        length()
+        {
+            return this.top;
+        }
+        pop(element) {
+            this.top=this.top-1
+            return this.list.pop()
+        }
+        peek(element){
+            return this.list[this.top-1]
+        }
+    }
+
+function print()
+{
+    var top = this.top-1
+    while(top>=0)
+    {
+        console.log(this.list[top])
+        top--;
+    }
+}
 
 bot.login(TOKEN);
 
@@ -17,47 +48,82 @@ bot.on('ready', () => {
     console.info(`Logged in as ${bot.user.tag}!`);
 });
 
-bot.on('message', msg => {
+var i = 1;
+var j = 0 ;
+var todo =[];
 
-    var i = 0;
-    var j = 0 ;
-    var todos =[];
-    if (msg.content === 'Hey Yolo' || msg.content === 'hey yolo') {
-        msg.channel.send('Hi, '+`${msg.author}`+". How can may I help you today?");
+
+bot.on('message', async msg =>  {
+
+    if (msg.content === 'Yolo help' || msg.content === 'yolo help') {
+        const embed = new Discord.MessageEmbed()
+        //const guild1 = new Discord.GuildMember(msg.author)
+        .setTitle(`Hello from @${msg.author.username}`)
+        .setColor(0xff0000)
+        .setThumbnail(msg.author.displayAvatarURL())
+        .setDescription('Here is the list of things I can do!')
+        .addField( "Todo", "I can help you remember tasks('Todo help' for further help)"  )
+        .addField( "Meme", "I can help you fetch memes from Reddit!(Yolo meme help'for further help)" )
+        .addField( "Book", "I can help you book study rooms and sports facilities!(Yolo book help'for further help)" )
+        msg.channel.send(embed);
+
     }
-    
-    if (msg.content.substr(0,9) === 'yolo toda' )
-    {
-        msg.channel.send("Todo Lists")
-        todos[i]=msg.content.substring(10)
-        //todos.push(msg.content.substring(10));
-        //for(j=0;j<=i;j++)
-        {
-            msg.channel.send((i+1)+") "+todos[i]);
-            i=i+1;
+    if (msg.content === 'todo help' || msg.content === 'Todo help')
+    {   
+        const embed = new Discord.MessageEmbed()
+        .setTitle("Todo Help Commands")
+        .setColor(0xff0000)
+        .setThumbnail(msg.author.displayAvatarURL())
+        .addField( "Todo Add [task]", "Add tasks to the todo lists"  )
+        .addField( "Todo done [task-no]", "Removes tasks from todo lists" )
+        .addField( "Todo show", "Displays the pending tasks in the todo lists" )
+        msg.channel.send(embed);
         }
-            //console.log(con.substring(10))
+    if (msg.content === 'todo show' || msg.content=== "Todo show" )
+    {   
+
+        if (todo.length === 0)
+        {
+        const embed = new Discord.MessageEmbed()
+        .setTitle(`Todo Lists @${msg.author.username}`)
+        .setColor(0xff0000)
+        .setThumbnail(msg.author.displayAvatarURL())
+        .setDescription('There are no pending tasks!');
+        msg.channel.send(embed);
+        }
+        else 
+        {
+        const embed = new Discord.MessageEmbed()
+        .setTitle(`Todo Lists @${msg.author.username}`)
+        .setColor(0xff0000)
+        .setThumbnail(msg.author.displayAvatarURL())
+        .setDescription('Here is the list of things to complete!')
+        
+        for ( j =0;j< todo.length;j++)
+        {
+            embed.addField(`Task ${j+1}`, todo[j])
+            i=i+1;
+            }
+            msg.channel.send(embed);
+        }
+    }
+
+    if (msg.content.substring(0,8) === 'Todo add' || msg.content.substring(0,8) === 'todo add')
+    {   
+        text=msg.content
+        temp=text.substring(9);
+        todo.push(temp) 
+    }
+
+    if (msg.content.substring(0,9) === 'Todo done' || msg.content.substring(0,9) === 'todo done')
+    {   
+        console.log(Number(msg.content.substring(9)))
+        todo.splice(Number(msg.content.substring(9))-1,1) 
     }
 
     if (msg.content === 'rip') {
         const attach = new Discord.MessageAttachment('https://i.imgur.com/w3duR07.png');
         msg.channel.send(`${msg.author}`, attach);
     }
-    if (msg.content === 'yolo todo') {
-        // We can create embeds using the MessageEmbed constructor
-        // Read more about all that you can do with the constructor
-        // over at https://discord.js.org/#/docs/main/master/class/MessageEmbed
-        const embed = new Discord.MessageEmbed()
-          // Set the title of the field
-          .setTitle('Todo Lists')
-          // Set the color of the embed
-          .setColor(0xff0000)
-          // Set the main content of the embed
-          .setDescription('Hello, here is the list of things todo!')
-          .setThumbnail('https://i.imgur.com/w3duR07.png');
-
-        // Send the embed to the same channel as the message
-        msg.channel.send(embed);
-      }
     }
 );
